@@ -1,29 +1,68 @@
 import React from "react";
-import { StyleSheet, Text, View } from "react-native";
+import { StyleSheet } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
-import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import HomeScreen from "../screens/HomeScreen";
-import LoginScreen from "../screens/LoginScreen";
-import RegisterScreen from "../screens/RegisterScreen";
-
-const Stack = createNativeStackNavigator();
+import ProfileScreen from "../screens/ProfileScreen";
+import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
+import { Icon } from "react-native-elements";
+import { TouchableOpacity } from "react-native";
+import { useSelector } from "react-redux";
+import { selectUser } from "../slices/userSlice";
+import { useNavigation } from "@react-navigation/native";
+import {db, auth} from '../firebase/firebase'
+const Tab = createBottomTabNavigator();
 
 const Main = () => {
+  const navigation = useNavigation();
+  const user = useSelector(selectUser);
+
   return (
-    <NavigationContainer>
-      <Stack.Navigator>
-        <Stack.Screen
-          name="HomeScreen"
+      <Tab.Navigator
+        initialRouteName={HomeScreen}
+        sceneContainerStyle={{ backgroundColor: "#0d0a36" }}
+        screenOptions={{
+          tabBarShowLabel: false,
+          tabBarStyle: {
+            backgroundColor: "#0d0a36",
+            borderTopWidth: 0.5,
+            borderTopColor: "lightgreen",
+          },
+          tabBarActiveBackgroundColor: "lightgreen",
+        }}
+      >
+        <Tab.Screen
+          name="Home"
           component={HomeScreen}
-          options={{ headerShown: false }}
+          options={{
+            headerShown: false,
+            tabBarButton: (props) => <TouchableOpacity {...props} />,
+            tabBarIcon: () => (
+              <Icon
+                name="home-outline"
+                type="ionicon"
+                color={"white"}
+                size={35}
+              />
+            ),
+          }}
         />
-        <Stack.Screen
-          name="RegisterScreen"
-          component={RegisterScreen}
-          options={{ headerShown: false }}
+        <Tab.Screen
+          name="Profile"
+          component={ProfileScreen}
+          options={{
+            headerShown: false,
+            tabBarButton: (props) => <TouchableOpacity {...props} />,
+            tabBarIcon: () => (
+              <Icon
+                name="person-circle-outline"
+                type="ionicon"
+                color={"white"}
+                size={35}
+              />
+            ),
+          }}
         />
-      </Stack.Navigator>
-    </NavigationContainer>
+      </Tab.Navigator>
   );
 };
 
