@@ -23,6 +23,16 @@ const LoginScreen = () => {
   useEffect(() => {
     auth.onAuthStateChanged((authUser) => {
       if (authUser) {
+        // db.collection("userGames")
+        //   .doc(authUser.uid)
+        //   .get()
+        //   .then((doc) => {
+        //     if (doc.exists) {
+        //       navigation.replace("Main");
+        //     } else {
+        //       navigation.replace('AddGames')
+        //     }
+        //   });
         navigation.replace("Main");
       }
     });
@@ -36,13 +46,14 @@ const LoginScreen = () => {
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
-      <SafeAreaView style={tw`bg-black flex-grow justify-center`}>
+      <View style={tw`bg-black flex-grow justify-center`}>
         <KeyboardAvoidingView
           behavior={Platform.OS === "ios" ? "padding" : "height"}
-          style={styles.container}
         >
           <View style={tw`items-center flex justify-center p-5`}>
-            <Text style={tw`text-white text-4xl font-semibold mb-5`}>Login</Text>
+            <Text style={tw`text-white text-4xl font-semibold mb-5`}>
+              Login
+            </Text>
             <Input
               color="white"
               placeholder="Username"
@@ -69,7 +80,7 @@ const LoginScreen = () => {
           </View>
           <View style={tw`mb-10`} />
         </KeyboardAvoidingView>
-      </SafeAreaView>
+      </View>
     </TouchableWithoutFeedback>
   );
 };

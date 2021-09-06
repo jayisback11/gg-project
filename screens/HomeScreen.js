@@ -15,6 +15,7 @@ import LoginScreen from "../screens/LoginScreen";
 import { Icon } from "react-native-elements";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import * as Location from "expo-location";
+import { db, auth } from "../firebase/firebase";
 
 const HomeScreen = () => {
   const navigation = useNavigation();
@@ -24,36 +25,20 @@ const HomeScreen = () => {
   const [errorMsg, setErrorMsg] = useState(null);
 
   useEffect(() => {
-    (async () => {
+    const getPermission = async () => {
       let { status } = await Location.requestForegroundPermissionsAsync();
       if (status !== "granted") {
         setErrorMsg("Permission to access location was denied");
         return;
       }
 
-      let location = await Location.getCurrentPositionAsync({});
-      setLocation(location);
-    })();
+      await Location.watchPositionAsync(
+        { timeInterval: 5000, distanceInterval: 2 },
+        (loc) => setLocation(JSON.parse(JSON.stringify(loc)))
+      );
+    };
+    getPermission();
   }, []);
-
-  useEffect(() => {
-    (async () => {
-      let { status } = await Location.requestBackgroundPermissionsAsync();
-      if (status !== "granted") {
-        setErrorMsg("Permission to access location was denied");
-        return;
-      }
-    })();
-  }, []);
-
-  let text = 'Waiting..';
-  if (errorMsg) {
-    text = errorMsg;
-  } else if (location) {
-    text = JSON.stringify(location);
-  }
-
- const asd = Location.hasServicesEnabledAsync().then(() => console.log('lol'))
   return (
     <SafeAreaView style={styles.container}>
       {/* HEADER */}
@@ -62,13 +47,11 @@ const HomeScreen = () => {
         {/* Followed Icon */}
         {/* Search Icon */}
         {/* Chat Icon */}
-        <Text style={tw`text-white`}>{text}</Text>
       </View>
       {/* CENTER */}
       <View style={styles.center__container}>
-        <Text style={tw`text-white`}>CENTER</Text>
-        <Text style={tw`text-white`}>{console.log(asd)}</Text>
-
+        <Text style={tw`text-white`}>{location?.coords?.longitude}</Text>
+        <Text style={tw`text-white`}>{location?.coords?.latitude}</Text>
       </View>
 
       {/* BOTTOM NAV */}

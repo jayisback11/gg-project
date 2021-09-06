@@ -25,6 +25,7 @@
     "web": {},
     "plugins": [
       "expo-location"
-    ]
+    ],
+    "description": ""
   }
 }
