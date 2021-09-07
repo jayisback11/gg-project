@@ -23,16 +23,16 @@ const LoginScreen = () => {
   useEffect(() => {
     auth.onAuthStateChanged((authUser) => {
       if (authUser) {
-        // db.collection("userGames")
-        //   .doc(authUser.uid)
-        //   .get()
-        //   .then((doc) => {
-        //     if (doc.exists) {
-        //       navigation.replace("Main");
-        //     } else {
-        //       navigation.replace('AddGames')
-        //     }
-        //   });
+        db.collection("userGames")
+          .doc(authUser.uid)
+          .get()
+          .then((doc) => {
+            if (doc.exists) {
+              navigation.replace("Main");
+            } else {
+              navigation.replace('AddGames')
+            }
+          });
         navigation.replace("Main");
       }
     });

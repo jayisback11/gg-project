@@ -10,6 +10,7 @@ import { useSelector } from "react-redux";
 import { selectUser } from "../slices/userSlice";
 import { useNavigation } from "@react-navigation/native";
 import {db, auth} from '../firebase/firebase'
+
 const Tab = createBottomTabNavigator();
 
 const Main = () => {
