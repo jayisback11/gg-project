@@ -9,7 +9,7 @@ import { TouchableOpacity } from "react-native";
 import { useSelector } from "react-redux";
 import { selectUser } from "../slices/userSlice";
 import { useNavigation } from "@react-navigation/native";
-import {db, auth} from '../firebase/firebase'
+import { db, auth } from "../firebase/firebase";
 
 const Tab = createBottomTabNavigator();
 
@@ -18,52 +18,54 @@ const Main = () => {
   const user = useSelector(selectUser);
 
   return (
-      <Tab.Navigator
-        initialRouteName={HomeScreen}
-        sceneContainerStyle={{ backgroundColor: "#0d0a36" }}
-        screenOptions={{
-          tabBarShowLabel: false,
-          tabBarStyle: {
-            backgroundColor: "#0d0a36",
-            borderTopWidth: 0.5,
-            borderTopColor: "lightgreen",
-          },
-          tabBarActiveBackgroundColor: "lightgreen",
+    <Tab.Navigator
+      initialRouteName={HomeScreen}
+      sceneContainerStyle={{ backgroundColor: "black" }}
+      screenOptions={{
+        tabBarInactiveTintColor: 'white',
+        tabBarShowLabel: false,
+        tabBarStyle: {
+          backgroundColor: "black",
+          borderTopWidth: 0.5,
+          borderTopColor: "white",
+        },
+        tabBarActiveBackgroundColor: "white",
+        tabBarActiveTintColor: 'black',
+      }}
+    >
+      <Tab.Screen
+        name="Home"
+        component={HomeScreen}
+        options={{
+          headerShown: false,
+          tabBarButton: (props) => <TouchableOpacity {...props} />,
+          tabBarIcon: ({ color }) => (
+            <Icon
+              name="home-outline"
+              type="ionicon"
+              color={color}
+              size={35}
+            />
+          ),
         }}
-      >
-        <Tab.Screen
-          name="Home"
-          component={HomeScreen}
-          options={{
-            headerShown: false,
-            tabBarButton: (props) => <TouchableOpacity {...props} />,
-            tabBarIcon: () => (
-              <Icon
-                name="home-outline"
-                type="ionicon"
-                color={"white"}
-                size={35}
-              />
-            ),
-          }}
-        />
-        <Tab.Screen
-          name="Profile"
-          component={ProfileScreen}
-          options={{
-            headerShown: false,
-            tabBarButton: (props) => <TouchableOpacity {...props} />,
-            tabBarIcon: () => (
-              <Icon
-                name="person-circle-outline"
-                type="ionicon"
-                color={"white"}
-                size={35}
-              />
-            ),
-          }}
-        />
-      </Tab.Navigator>
+      />
+      <Tab.Screen
+        name="Profile"
+        component={ProfileScreen}
+        options={{
+          headerShown: false,
+          tabBarButton: (props) => <TouchableOpacity {...props} />,
+          tabBarIcon: ({color}) => (
+            <Icon
+              name="person-circle-outline"
+              type="ionicon"
+              color={color}
+              size={35}
+            />
+          ),
+        }}
+      />
+    </Tab.Navigator>
   );
 };
 

@@ -33,7 +33,6 @@ const LoginScreen = () => {
               navigation.replace('AddGames')
             }
           });
-        navigation.replace("Main");
       }
     });
   }, []);

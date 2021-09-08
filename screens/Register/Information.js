@@ -33,11 +33,13 @@ const Information = () => {
     auth
       .createUserWithEmailAndPassword(userInfo.email, userInfo.password)
       .then((authUser) =>
-        authUser.user.updateProfile({
-          displayName: userInfo.first_name + userInfo.last_name,
+        {
+          const fullName= `${userInfo.first_name} ${userInfo.last_name}`
+          authUser.user.updateProfile({
+          displayName: fullName,
           uid: authUser.uid,
           email: authUser.email,
-        })
+        })}
       )
       .catch((error) => alert(error));
       navigation.navigate('AddGames')

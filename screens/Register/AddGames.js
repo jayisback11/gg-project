@@ -9,20 +9,21 @@ import {
   TouchableOpacity,
 } from "react-native";
 import tw from "tailwind-react-native-classnames";
-import { SearchBar, Button, CheckBox, Icon } from "react-native-elements";
-import { CLIENT_ID, CLIENT_SECRET } from "@env";
+import { SearchBar, Button, Icon, Image } from "react-native-elements";
+import { API_KEY } from "@env";
 import { debounce } from "lodash";
 
 const AddGames = () => {
   const [availableGames, setAvailableGames] = useState([]);
   const [search, setSearch] = useState("");
   const [text, setText] = useState("");
+  const [gamesAdded, setGamesAdded] = useState([]);
 
   const deb = useCallback(
     debounce((text) => {
       setSearch(text);
       console.log("b");
-    }, 500),
+    }, 1000),
     []
   );
   const handleSearch = (text) => {
@@ -30,85 +31,134 @@ const AddGames = () => {
     deb(text);
   };
 
+  const handleGameAdd = (game) => {
+    setGamesAdded((oldArray) => [...oldArray, game]);
+    console.log(gamesAdded);
+  };
+
+  const handleDelete = (item) => {
+    setGamesAdded(gamesAdded.filter(game => {
+      return game !== item
+    }))
+  };
+
   useEffect(() => {
     async function fetchGames() {
       const result = await fetch(
-        `https://id.twitch.tv/oauth2/token?client_id=${CLIENT_ID}&client_secret=${CLIENT_SECRET}&grant_type=client_credentials`,
-        {
-          method: "POST",
-          headers: {
-            Accept: "application/json",
-            "Content-Type": "application/json",
-          },
-        }
+        `https://api.rawg.io/api/games?key=${API_KEY}&search=${search}&ordering=-rating&search_precise=true&exclude_additions=true`
       )
-        .then((res) => res.json())
-        .then((data) => {
-          return fetch("https://api.igdb.com/v4/search", {
-            method: "POST",
-            headers: {
-              "Content-Type": "text/plain",
-              "Client-ID": "otgkagowpkftrpvtyw09m6fu5gcxmp",
-              Authorization: `Bearer ${data.access_token}`,
-            },
-            body: `fields *; search "${search}"; limit 25;`,
-          });
-        })
-        .then((res) => res.json())
-        .then((data) => setAvailableGames(data))
-        .catch((error) => alert(error));
+        .then((response) => response.json())
+        .then((data) => setAvailableGames(JSON.parse(JSON.stringify(data))));
     }
-    fetchGames();
+    if (search) {
+      fetchGames();
+    }
   }, [search]);
-
+  console.log(gamesAdded);
   return (
-    <SafeAreaView style={tw`flex-grow bg-black`}>
-      <View style={tw`px-3 pt-1`}>
+    <SafeAreaView style={styles.homeScreen}>
+      <View style={styles.homeScreenContainer}>
+        {gamesAdded.length != 0 && (
+          <TouchableOpacity
+            style={tw`absolute top-2 text-red-500 right-4 border-2 rounded-full border-green-500 bg-green-500 p-2 px-4 `}
+          >
+            <Text style={tw`text-white text-lg`}>Next</Text>
+          </TouchableOpacity>
+        )}
         <Text style={styles.headingText}>Select your games...</Text>
-
         <View>
           <SearchBar
             placeholder="Search Games..."
             value={text}
             lightTheme={true}
-            containerStyle={{ backgroundColor: "transparent", borderTopWidth: "none", borderBottomWidth: "none"}}
-            inputContainerStyle={{backgroundColor: 'white'}}
-            inputStyle={{color: 'black'}}
+            containerStyle={{
+              backgroundColor: "transparent",
+              borderTopWidth: "none",
+              borderBottomWidth: "none",
+            }}
+            inputContainerStyle={{ backgroundColor: "white" }}
+            inputStyle={{ color: "black" }}
             placeholderTextColor="black"
-            searchIcon={<Icon name="search-outline" type="ionicon" color="black" size={30}/>}
+            searchIcon={
+              <Icon
+                name="search-outline"
+                type="ionicon"
+                color="black"
+                size={30}
+              />
+            }
             onChangeText={(text) => handleSearch(text)}
           />
         </View>
-        <View>
+        {search ? (
+          <Text style={tw`text-white text-lg text-xl pl-4`}>
+            Press game to add
+          </Text>
+        ) : (
+          <Text style={tw`text-white text-lg text-xl pl-4`}>
+            Press game to remove
+          </Text>
+        )}
+        {/* FlatList */}
+        <View style={tw`mb-2`} />
+        {search ? (
           <FlatList
-            data={availableGames}
-            keyExtractor={(item) => item.id.toString()}
+            data={availableGames.results}
+            KeyExtractor={(item) => item.id.toString()}
             renderItem={({ item }) => {
-              if (!search) {
+              if (gamesAdded.includes(item)) {
                 return null;
-              } else if (
-                item.name.toLowerCase().includes(search.toLowerCase())
-              ) {
-                return (
-                  <View key={item.id} style={styles.itemContainer}>
-                    <Text style={tw`text-white text-lg w-3/4`}>
-                      {item.name}
-                    </Text>
-                    <TouchableOpacity>
-                      <Icon
-                        name="add-outline"
-                        type="ionicon"
-                        size={35}
-                        color="green"
-                        style={tw`rounded-full bg-white`}
-                      />
-                    </TouchableOpacity>
-                  </View>
-                );
               }
+              return (
+                <TouchableOpacity
+                  style={tw`p-5 rounded-lg mx-5 my-1 border-2 border-gray-600`}
+                  onPress={() => handleGameAdd(item)}
+                >
+                  <Image
+                    source={{ uri: item.background_image }}
+                    style={{ width: "100%", height: 200, resizeMode: "cover" }}
+                  />
+                  <Text style={[tw`text-white text-center text-lg`]}>
+                    {item.name}
+                  </Text>
+                </TouchableOpacity>
+              );
             }}
           />
-        </View>
+        ) : (
+          <FlatList
+            data={gamesAdded}
+            KeyExtractor={(item) => item.id}
+            renderItem={({ item }) => (
+              <TouchableOpacity
+                style={{
+                  padding: 20,
+                  marginLeft: 10,
+                  marginRight: 10,
+                  marginTop: 10,
+                  marginBottom: 5,
+                  borderWidth: 2,
+                  borderColor: "gray",
+                  borderRadius: 10,
+                }}
+                onPress={() => handleDelete(item)}
+              >
+                <Image
+                  source={{ uri: item.background_image }}
+                  style={{
+                    width: "100%",
+                    height: 100,
+                    resizeMode: "cover",
+                    backgroundColor: "transparent",
+                  }}
+                />
+                <Text style={[tw`text-white text-center text-lg`]}>
+                  {item.name}
+                </Text>
+              </TouchableOpacity>
+            )}
+          />
+        )}
       </View>
     </SafeAreaView>
   );
@@ -117,15 +167,15 @@ const AddGames = () => {
 export default AddGames;
 
 const styles = StyleSheet.create({
-  itemContainer: {
-    display: "flex",
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    borderWidth: 1,
-    borderColor: "white",
-    margin: 10,
-    padding: 10,
+  homeScreen: {
+    backgroundColor: "black",
+    width: "100%",
+    height: "100%",
+  },
+  homeScreenContainer: {
+    width: "100%",
+    height: "100%",
+    padding: 5,
   },
   headingText: {
     fontSize: 40,
