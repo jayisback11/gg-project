@@ -52,7 +52,7 @@ const HomeScreen = () => {
     };
     getPermission();
   }, [location?.coords?.altitude]);
-
+  
   useEffect(() => {
     // INTERVAL run every 5secs
 

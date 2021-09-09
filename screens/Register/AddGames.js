@@ -12,6 +12,7 @@ import tw from "tailwind-react-native-classnames";
 import { SearchBar, Button, Icon, Image } from "react-native-elements";
 import { API_KEY } from "@env";
 import { debounce } from "lodash";
+import { db, auth } from "../../firebase/firebase";
 
 const AddGames = () => {
   const [availableGames, setAvailableGames] = useState([]);
@@ -37,9 +38,27 @@ const AddGames = () => {
   };
 
   const handleDelete = (item) => {
-    setGamesAdded(gamesAdded.filter(game => {
-      return game !== item
-    }))
+    setGamesAdded(
+      gamesAdded.filter((game) => {
+        return game !== item;
+      })
+    );
+  };
+
+  function transform(data) {
+    var transformedObject = {};
+    for (var i = 0; i < data.length; i++) {
+      transformedObject[data[i]] = data[i];
+    }
+    return transformedObject;
+  }
+
+  const handleSubmit = () => {
+    db.collection("userGames")
+      .doc(auth.currentUser.uid)
+      .set({gamesAdded})
+      .then(() => console.log("document in userGames is successfully added"))
+      .catch((error) => console.log(error));
   };
 
   useEffect(() => {
@@ -54,13 +73,17 @@ const AddGames = () => {
       fetchGames();
     }
   }, [search]);
-  console.log(gamesAdded);
+  console.log('games', gamesAdded);
   return (
     <SafeAreaView style={styles.homeScreen}>
       <View style={styles.homeScreenContainer}>
         {gamesAdded.length != 0 && (
           <TouchableOpacity
-            style={tw`absolute top-2 text-red-500 right-4 border-2 rounded-full border-green-500 bg-green-500 p-2 px-4 `}
+            style={[
+              tw`absolute top-2 text-red-500 right-4 border-2 rounded-full border-green-500 bg-green-500 p-2 px-4`,
+              { zIndex: 1 },
+            ]}
+            onPress={handleSubmit}
           >
             <Text style={tw`text-white text-lg`}>Next</Text>
           </TouchableOpacity>
@@ -104,7 +127,7 @@ const AddGames = () => {
         {search ? (
           <FlatList
             data={availableGames.results}
-            KeyExtractor={(item) => item.id.toString()}
+            keyExtractor={(item) => item.id.toString()}
             renderItem={({ item }) => {
               if (gamesAdded.includes(item)) {
                 return null;
@@ -128,7 +151,7 @@ const AddGames = () => {
         ) : (
           <FlatList
             data={gamesAdded}
-            KeyExtractor={(item) => item.id}
+            keyExtractor={(item) => item.id.toString()}
             renderItem={({ item }) => (
               <TouchableOpacity
                 style={{

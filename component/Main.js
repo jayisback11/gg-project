@@ -14,9 +14,6 @@ import { db, auth } from "../firebase/firebase";
 const Tab = createBottomTabNavigator();
 
 const Main = () => {
-  const navigation = useNavigation();
-  const user = useSelector(selectUser);
-
   return (
     <Tab.Navigator
       initialRouteName={HomeScreen}
