@@ -8,8 +8,8 @@ import {
   Platform,
 } from "react-native";
 import tw from "tailwind-react-native-classnames";
-import { useSelector } from "react-redux";
-import { selectUser } from "../slices/userSlice";
+import { useSelector, useDispatch } from "react-redux";
+import { selectUser, login } from "../slices/userSlice";
 import { useNavigation } from "@react-navigation/native";
 import LoginScreen from "../screens/LoginScreen";
 import { Icon } from "react-native-elements";
@@ -21,11 +21,12 @@ import haversine from "haversine-distance";
 const HomeScreen = () => {
   const navigation = useNavigation();
   const user = useSelector(selectUser);
-
+  const dispatch = useDispatch();
   const [location, setLocation] = useState(null);
   const [errorMsg, setErrorMsg] = useState(null);
   const [prevLocation, setPrevLocation] = useState(null);
   const [distanceFromUsers, setDistanceFromUsers] = useState([]);
+
   useEffect(() => {
     const getPermission = async () => {
       let { status } = await Location.requestForegroundPermissionsAsync();
@@ -51,11 +52,17 @@ const HomeScreen = () => {
       }
     };
     getPermission();
-  }, [location?.coords?.altitude]);
-  
-  useEffect(() => {
-    // INTERVAL run every 5secs
 
+    db.collection("userInfo")
+      .doc(auth.currentUser.uid)
+      .get()
+      .then((docInfo) => {
+        dispatch(login(docInfo.data()));
+      })
+      .catch((error) => console.log(error));
+  }, [location?.coords?.altitude]);
+
+  useEffect(() => {
     const interval = setInterval(() => {
       setDistanceFromUsers([]);
       db.collection("userLocation")
@@ -77,13 +84,17 @@ const HomeScreen = () => {
                       longitude: doc.data().coords.longitude,
                     };
                     const distance = haversine(userA, userB);
-                    setDistanceFromUsers((oldArray) => [
-                      ...oldArray,
-                      {
-                        distanceBetweenUsers: distance,
-                        displayName: doc.data().displayName,
-                      },
-                    ]);
+                    if(distance <= 150){
+                      db.collection('notificationId').doc()
+                    }
+                    // setDistanceFromUsers((oldArray) => [
+                    //   ...oldArray,
+                    //   {
+                    //     distanceBetweenUsers: distance,
+                    //     otherUser: doc.data().displayName,
+                    //     currentUser: userDoc.data().displayName,
+                    //   },
+                    // ]);
                   }
                 });
               });
@@ -98,7 +109,7 @@ const HomeScreen = () => {
     }, 10000);
     return () => clearInterval(interval);
   }, []);
-  console.log("what", distanceFromUsers);
+  console.log(distanceFromUsers);
   return (
     <SafeAreaView style={styles.container}>
       {/* HEADER */}
@@ -113,9 +124,11 @@ const HomeScreen = () => {
         <Text style={tw`text-white`}>{location?.coords?.longitude}</Text>
         <Text style={tw`text-white`}>{location?.coords?.latitude}</Text>
         {distanceFromUsers.map(
-          ({ displayName, distanceBetweenUsers }, index) => (
+          ({ otherUser, distanceBetweenUsers, currentUser }, index) => (
             <Text style={tw`text-white`} key={index}>
-              User: {displayName} -> {distanceBetweenUsers} meters
+            {console.log('otherDisplayName', displayName, otherDisplayName)}
+              User: {(otherUser )} -> {distanceBetweenUsers}{" "}
+              meters {currentUser}
             </Text>
           )
         )}

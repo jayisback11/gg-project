@@ -13,8 +13,10 @@ import { SearchBar, Button, Icon, Image } from "react-native-elements";
 import { API_KEY } from "@env";
 import { debounce } from "lodash";
 import { db, auth } from "../../firebase/firebase";
+import { useNavigation } from "@react-navigation/native";
 
 const AddGames = () => {
+  const navigation = useNavigation();
   const [availableGames, setAvailableGames] = useState([]);
   const [search, setSearch] = useState("");
   const [text, setText] = useState("");
@@ -56,8 +58,11 @@ const AddGames = () => {
   const handleSubmit = () => {
     db.collection("userGames")
       .doc(auth.currentUser.uid)
-      .set({gamesAdded})
-      .then(() => console.log("document in userGames is successfully added"))
+      .set({ gamesAdded })
+      .then(() => {
+        console.log("document in userGames is successfully added");
+        navigation.replace("Main");
+      })
       .catch((error) => console.log(error));
   };
 
@@ -73,7 +78,7 @@ const AddGames = () => {
       fetchGames();
     }
   }, [search]);
-  console.log('games', gamesAdded);
+  console.log("games", gamesAdded);
   return (
     <SafeAreaView style={styles.homeScreen}>
       <View style={styles.homeScreenContainer}>

@@ -13,16 +13,24 @@ import { useNavigation } from "@react-navigation/native";
 import { Input, Button } from "react-native-elements";
 import tw from "tailwind-react-native-classnames";
 import { db, auth } from "../firebase/firebase";
+import { useDispatch } from "react-redux";
+import { login } from "../slices/userSlice";
 
 const LoginScreen = () => {
+  const dispatch = useDispatch();
   const [user, setUsername] = useState("");
   const [password, setPassword] = useState("");
-
   const navigation = useNavigation();
 
   useEffect(() => {
     auth.onAuthStateChanged((authUser) => {
       if (authUser) {
+        db.collection("userInfo")
+          .doc(authUser.uid)
+          .get()
+          .then((docInfo) => {
+            dispatch(login(docInfo.data()));
+          });
         db.collection("userGames")
           .doc(authUser.uid)
           .get()
@@ -30,7 +38,7 @@ const LoginScreen = () => {
             if (doc.exists) {
               navigation.replace("Main");
             } else {
-              navigation.replace('AddGames')
+              navigation.replace("AddGames");
             }
           });
       }
