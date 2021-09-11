@@ -7,6 +7,7 @@ import RegisterScreen from "./screens/Register/RegisterScreen";
 import AddGames from "./screens/Register/AddGames";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import Main from "./component/Main";
+
 const Stack = createNativeStackNavigator();
 
 export default function App() {
@@ -39,3 +40,5 @@ export default function App() {
     </Provider>
   );
 }
+
+

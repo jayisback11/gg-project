@@ -1,16 +1,14 @@
-import React from "react";
-import { StyleSheet } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import HomeScreen from "../screens/HomeScreen";
 import ProfileScreen from "../screens/ProfileScreen";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { Icon } from "react-native-elements";
 import { TouchableOpacity } from "react-native";
-import { useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { selectUser } from "../slices/userSlice";
 import { useNavigation } from "@react-navigation/native";
 import { db, auth } from "../firebase/firebase";
-
+import React from 'react'
 const Tab = createBottomTabNavigator();
 
 const Main = () => {
@@ -19,7 +17,7 @@ const Main = () => {
       initialRouteName={HomeScreen}
       sceneContainerStyle={{ backgroundColor: "black" }}
       screenOptions={{
-        tabBarInactiveTintColor: 'white',
+        tabBarInactiveTintColor: "white",
         tabBarShowLabel: false,
         tabBarStyle: {
           backgroundColor: "black",
@@ -27,7 +25,7 @@ const Main = () => {
           borderTopColor: "white",
         },
         tabBarActiveBackgroundColor: "white",
-        tabBarActiveTintColor: 'black',
+        tabBarActiveTintColor: "black",
       }}
     >
       <Tab.Screen
@@ -37,12 +35,7 @@ const Main = () => {
           headerShown: false,
           tabBarButton: (props) => <TouchableOpacity {...props} />,
           tabBarIcon: ({ color }) => (
-            <Icon
-              name="home-outline"
-              type="ionicon"
-              color={color}
-              size={35}
-            />
+            <Icon name="home-outline" type="ionicon" color={color} size={35} />
           ),
         }}
       />
@@ -52,7 +45,7 @@ const Main = () => {
         options={{
           headerShown: false,
           tabBarButton: (props) => <TouchableOpacity {...props} />,
-          tabBarIcon: ({color}) => (
+          tabBarIcon: ({ color }) => (
             <Icon
               name="person-circle-outline"
               type="ionicon"
@@ -67,5 +60,3 @@ const Main = () => {
 };
 
 export default Main;
-
-const styles = StyleSheet.create({});
