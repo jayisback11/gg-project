@@ -28,6 +28,9 @@ const HomeScreen = () => {
   const [prevLocation, setPrevLocation] = useState(null);
   const [distanceFromUsers, setDistanceFromUsers] = useState([]);
   const expoPushToken = useSelector(selectNotification);
+  const [userAGames, setUserAGames] = useState([]);
+  const [userBGames, setUserBGames] = useState([]);
+  const [similarGames, setSimilarGames] = useState([]);
   useEffect(() => {
     const getPermission = async () => {
       let { status } = await Location.requestForegroundPermissionsAsync();
@@ -65,72 +68,82 @@ const HomeScreen = () => {
 
   useEffect(() => {
     const interval = setInterval(() => {
-      setDistanceFromUsers([]);
       db.collection("userLocation")
         .doc(auth.currentUser.uid)
         .get()
-        .then((userDoc) => {
-          if (userDoc.exists) {
+        .then((userADoc) => {
+          if (userADoc.exists) {
             let userA = {
-              latitude: userDoc.data().coords.latitude,
-              longitude: userDoc.data().coords.longitude,
+              latitude: userADoc.data().coords.latitude,
+              longitude: userADoc.data().coords.longitude,
             };
             db.collection("userLocation")
               .get()
               .then((snapshot) => {
-                snapshot.docs.map((doc) => {
-                  if (doc.id !== auth.currentUser.uid) {
-                    let userB = {
-                      latitude: doc.data().coords.latitude,
-                      longitude: doc.data().coords.longitude,
-                    };
-                    const distance = haversine(userA, userB);
+                snapshot.docs.map((userBDoc) => {
+                  /////IF BOTH USERS ALREADY NOTIFICATED IN THE PAST, THEN GO TO NEXT DOC//////
+                  if (userBDoc.id !== auth.currentUser.uid) {
+                    let isExist = false;
+                    db.collection("notificationIds")
+                      .get()
+                      .then((snapshot) => {
+                        snapshot.docs.map((notificationId) => {
+                          if (
+                            notificationId
+                              .data()
+                              .participants.includes(auth.currentUser.uid) &&
+                            notificationId
+                              .data()
+                              .participants.includes(userBDoc.id)
+                          ) {
+                            isExist = true;
+                          }
+                        });
+                        if (!isExist) {
+                          let userB = {
+                            latitude: userBDoc.data().coords.latitude,
+                            longitude: userBDoc.data().coords.longitude,
+                          };
+                          const distance = haversine(userA, userB);
 
-                    setDistanceFromUsers((oldArray) => [
-                      ...oldArray,
-                      {
-                        distanceBetweenUsers: distance,
-                        otherUser: doc.data().displayName,
-                        currentUser: userDoc.data().displayName,
-                      },
-                    ]);
-
-                    // if (distance <= 150) {
-                    //   let other_user_username;
-                    //   let isExist = false;
-                    //   db.collection("notificationId")
-                    //     .get()
-                    //     .then((snapshot) => {
-                    //       snapshot.docs.map((notifDoc) => {
-                    //         if (
-                    //           notifDoc.id === auth.currentUser.uid &&
-                    //           notifDoc.data().otherUser === doc.id
-                    //         ) {
-                    //           isExist = true;
-                    //           return;
-                    //         }
-                    //       });
-                    //     });
-                    //   if (!isExist) {
-                    //     if (similarGames) {
-                    //       db.collection("notificationId")
-                    //         .doc(auth.currentUser.uid)
-                    //         .set({
-                    //           otherUser: doc.id,
-                    //         });
-                    //       db.collection("userInfo")
-                    //         .doc(doc.id)
-                    //         .get()
-                    //         .then((userDoc) => {
-                    //           other_user_username = userDoc.data().username;
-                    //         });
-                    //       sendPushNotification(
-                    //         expoPushToken?.token,
-                    //         other_user_username
-                    //       );
-                    //     }
-                    //   }
-                    // }
+                          setDistanceFromUsers((oldArray) => [
+                            ...oldArray,
+                            {
+                              distanceBetweenUsers: distance,
+                              otherUser: userBDoc.data().displayName,
+                              currentUser: userADoc.data().displayName,
+                            },
+                          ]);
+                          if (distance <= 150) {
+                            db.collection("userGames")
+                              .doc(auth.currentUser.uid)
+                              .get()
+                              .then((userAGames) => {
+                                db.collection("userGames")
+                                  .doc(userBDoc.id)
+                                  .get()
+                                  .then((userBGames) => {
+                                    const similarGames = userAGames
+                                      .data()
+                                      .games.filter((game) =>
+                                        userBGames.data().games.includes(game)
+                                      );
+                                    if (similarGames.length > 0) {
+                                      db.collection("notificationIds").add({
+                                        participants: [
+                                          auth.currentUser.uid,
+                                          userBDoc.id,
+                                        ],
+                                      });
+                                      sendPushNotification(
+                                        expoPushToken?.token
+                                      );
+                                    }
+                                  });
+                              });
+                          }
+                        }
+                      });
                   }
                 });
               });
@@ -142,10 +155,9 @@ const HomeScreen = () => {
         .catch((error) => {
           console.log("Error getting document:", error);
         });
-    }, 10000);
+    }, 5000);
     return () => clearInterval(interval);
   }, []);
-  console.log(distanceFromUsers);
   return (
     <SafeAreaView style={styles.container}>
       {/* HEADER */}
@@ -171,7 +183,7 @@ const HomeScreen = () => {
       <Button
         title="Press to Send Notification"
         onPress={async () => {
-          await sendPushNotification(expoPushToken?.token, "hay");
+          await sendPushNotification(expoPushToken?.token);
         }}
       />
       {/* BOTTOM NAV */}
@@ -179,12 +191,12 @@ const HomeScreen = () => {
   );
 };
 
-async function sendPushNotification(expoPushToken, other_user_username) {
+async function sendPushNotification(expoPushToken) {
   const message = {
     to: expoPushToken,
     sound: "default",
     title: "Gamer Found!",
-    body: `${other_user_username} plays the same game as you.`,
+    body: "A gamer plays the same game as you.",
     data: { data: "goes here" },
   };
 

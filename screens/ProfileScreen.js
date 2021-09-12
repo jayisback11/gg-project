@@ -26,7 +26,7 @@ const ProfileScreen = () => {
       .doc(auth.currentUser.uid)
       .get()
       .then((doc) => {
-        setGames(doc.data().gamesAdded);
+        setGames(doc.data().games);
       })
       .catch((error) => console.log(error));
   }, []);
@@ -71,12 +71,12 @@ const ProfileScreen = () => {
         <Text style={tw`text-white text-2xl text-center`}>Games</Text>
         <ScrollView>
           <View style={styles.gamesContainer}>
-            {Object.values(games).map((game) => (
+            {games.map((game) => (
               <TouchableOpacity
                 style={tw`mx-1 border-b-2 border-white `}
-                key={game.id}
+                key={game}
               >
-                <Text style={tw`text-white text-center`}>{game.name}</Text>
+                <Text style={tw`text-white text-center`}>{game}</Text>
               </TouchableOpacity>
             ))}
           </View>

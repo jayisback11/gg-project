@@ -21,7 +21,6 @@ const AddGames = () => {
   const [search, setSearch] = useState("");
   const [text, setText] = useState("");
   const [gamesAdded, setGamesAdded] = useState([]);
-
   const deb = useCallback(
     debounce((text) => {
       setSearch(text);
@@ -35,30 +34,21 @@ const AddGames = () => {
   };
 
   const handleGameAdd = (game) => {
-    setGamesAdded((oldArray) => [...oldArray, game]);
-    console.log(gamesAdded);
+    setGamesAdded((oldArray) => [...oldArray, game.name]);
   };
 
   const handleDelete = (item) => {
     setGamesAdded(
       gamesAdded.filter((game) => {
-        return game !== item;
+        return game !== item.name;
       })
     );
   };
 
-  function transform(data) {
-    var transformedObject = {};
-    for (var i = 0; i < data.length; i++) {
-      transformedObject[data[i]] = data[i];
-    }
-    return transformedObject;
-  }
-
   const handleSubmit = () => {
     db.collection("userGames")
       .doc(auth.currentUser.uid)
-      .set({ gamesAdded })
+      .set({ games: gamesAdded })
       .then(() => {
         console.log("document in userGames is successfully added");
         navigation.replace("Main");
