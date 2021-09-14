@@ -33,23 +33,31 @@ const ProfileScreen = () => {
 
   return (
     <SafeAreaView style={styles.container}>
+      <TouchableOpacity style={[tw`absolute top-7 right-3`, {zIndex: 1}]}>
+        <Icon name="settings-outline" type="ionicon" size={35} color="white" />
+      </TouchableOpacity>
       <View style={styles.top}>
-        <Avatar
-          source={{
-            uri: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQS8P7S393c1aD_xwVNO9UTPWI10JccFYv3nZBpNJLwlQaSmZnWoFFZeDoZXXno3j87uXg&usqp=CAU",
-          }}
-          width={100}
-          height={100}
-          rounded={true}
-        />
-        <View style={styles.topInfo}>
-          <View style={tw`border-b-2 border-red-600 m-2`}>
-            <Text style={tw`text-white text-sm`}>{user?.username}</Text>
+        <View style={styles.topRight}>
+          <Avatar
+            rounded
+            source={{
+              uri: "https://static.wikia.nocookie.net/dota2_gamepedia/images/0/07/Arc_Warden_icon.png/revision/latest/scale-to-width-down/256?cb=20160411214723",
+            }}
+            width={100}
+            height={100}
+          />
+          <View>
+            <Text style={tw`text-white text-xl font-semibold ml-5`}>
+              {user.username}
+            </Text>
           </View>
-          <Text style={tw`text-white text-xs`}>Red Dead Redemption 2</Text>
-          <View style={styles.bio}>
-            <Text style={tw`text-white text-sm`}>Bio:</Text>
-          </View>
+        </View>
+        <View style={styles.bio}>
+          <Text numberOfLines={2} style={tw`text-white text-sm mt-3 `}>
+            lorem ipsum dolor sit amet, consectetur adiplorem ipsum dolor sit
+            amet, consectetur adiplorem ipsum dolor sit amet, consectetur
+            adiplorem ipsum dolor sit amet, consectetur adip
+          </Text>
         </View>
       </View>
       <View style={styles.bottom}>
@@ -63,36 +71,19 @@ export default ProfileScreen;
 
 const styles = StyleSheet.create({
   container: {
-    display: "flex",
     flex: 1,
   },
   top: {
     flex: 0.3,
-    display: "flex",
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-around",
-    borderWidth: 1,
-    borderColor: "red",
+    padding: 20,
+    borderBottomWidth: 1,
+    borderColor: "gray",
   },
   bottom: {
     flex: 0.7,
-    borderWidth: 1,
-    borderColor: "green",
   },
-  topInfo: {
-    display: "flex",
+  topRight: {
+    flexDirection: "row",
     justifyContent: "center",
-    width: "50%",
-    height: "50%",
-    alignItems: "center",
-    justifyContent: "flex-start",
-  },
-  bio: {
-    color: "white",
-    display: "flex",
-    justifyContent: "flex-start",
-    alignItems: "flex-start",
-    width: "100%",
   },
 });

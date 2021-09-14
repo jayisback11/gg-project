@@ -43,6 +43,7 @@ const Information = () => {
           username: userInfo.username,
           bio: "No bio",
           platforms: "No platforms",
+          profileURL: '',
         });
         navigation.navigate("AddGames");
       })
