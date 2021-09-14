@@ -28,9 +28,7 @@ const HomeScreen = () => {
   const [prevLocation, setPrevLocation] = useState(null);
   const [distanceFromUsers, setDistanceFromUsers] = useState([]);
   const expoPushToken = useSelector(selectNotification);
-  const [userAGames, setUserAGames] = useState([]);
-  const [userBGames, setUserBGames] = useState([]);
-  const [similarGames, setSimilarGames] = useState([]);
+
   useEffect(() => {
     const getPermission = async () => {
       let { status } = await Location.requestForegroundPermissionsAsync();
@@ -105,7 +103,8 @@ const HomeScreen = () => {
                             longitude: userBDoc.data().coords.longitude,
                           };
                           const distance = haversine(userA, userB);
-
+                          
+                          setDistanceFromUsers([]);
                           setDistanceFromUsers((oldArray) => [
                             ...oldArray,
                             {
@@ -162,10 +161,6 @@ const HomeScreen = () => {
     <SafeAreaView style={styles.container}>
       {/* HEADER */}
       <View style={styles.header}>
-        <View></View>
-        {/* Followed Icon */}
-        {/* Search Icon */}
-        {/* Chat Icon */}
       </View>
       {/* CENTER */}
       <View style={styles.center__container}>
@@ -179,14 +174,6 @@ const HomeScreen = () => {
           )
         )}
       </View>
-      <Text style={tw`text-white`}>{expoPushToken?.token}</Text>
-      <Button
-        title="Press to Send Notification"
-        onPress={async () => {
-          await sendPushNotification(expoPushToken?.token);
-        }}
-      />
-      {/* BOTTOM NAV */}
     </SafeAreaView>
   );
 };

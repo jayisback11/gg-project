@@ -19,7 +19,7 @@ const ProfileScreen = () => {
   const navigation = useNavigation();
   const [games, setGames] = useState([]);
   const user = useSelector(selectUser);
-  const dispatch = useDispatch()
+  const dispatch = useDispatch();
 
   useEffect(() => {
     db.collection("userGames")
@@ -33,71 +33,28 @@ const ProfileScreen = () => {
 
   return (
     <SafeAreaView style={styles.container}>
-      {/* top */}
-      <View style={styles.topProfile}>
-        <TouchableOpacity
-          style={tw` border-2 border-white rounded-full px-3 py-1`}
-          onPress={() => {
-            auth.signOut();
-            dispatch(logout(null))
-            navigation.reset({
-              index: 0,
-              routes: [{ name: "Login" }],
-            });
+      <View style={styles.top}>
+        <Avatar
+          source={{
+            uri: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQS8P7S393c1aD_xwVNO9UTPWI10JccFYv3nZBpNJLwlQaSmZnWoFFZeDoZXXno3j87uXg&usqp=CAU",
           }}
-        >
-          <Text style={tw`text-white text-2xl font-semibold text-center`}>
-            {user.username}
-          </Text>
-        </TouchableOpacity>
-        <Text style={tw`text-white`}>Platform: PC, PS4</Text>
-      </View>
-      {/* bio */}
-      <View style={styles.bioProfile}>
-        <TouchableOpacity style={[tw`absolute right-2 top-1`, { zIndex: 1 }]}>
-          <Icon name="create-outline" type="ionicon" color="white" size={35} />
-        </TouchableOpacity>
-        <Text style={tw`text-white text-2xl text-center font-semibold`}>
-          Biography
-        </Text>
-        <Text style={tw`text-white text-base`}>
-          lorem ipsum dolor sit amet, consecteturlorem ipsum dolorlorempis, sed
-          diam nonum lorem ipsum lorem ipsum dolor lorem ipsum lorem ipsum lorem
-          ipsum lorem ipsum
-        </Text>
-      </View>
-      {/* games */}
-      <View style={styles.gamesProfile}>
-        <Text style={tw`text-white text-2xl text-center`}>Games</Text>
-        <ScrollView>
-          <View style={styles.gamesContainer}>
-            {games.map((game) => (
-              <TouchableOpacity
-                style={tw`mx-1 border-b-2 border-white `}
-                key={game}
-              >
-                <Text style={tw`text-white text-center`}>{game}</Text>
-              </TouchableOpacity>
-            ))}
+          width={100}
+          height={100}
+          rounded={true}
+        />
+        <View style={styles.topInfo}>
+          <View style={tw`border-b-2 border-red-600 m-2`}>
+            <Text style={tw`text-white text-sm`}>{user?.username}</Text>
           </View>
-        </ScrollView>
+          <Text style={tw`text-white text-xs`}>Red Dead Redemption 2</Text>
+          <View style={styles.bio}>
+            <Text style={tw`text-white text-sm`}>Bio:</Text>
+          </View>
+        </View>
       </View>
-      {/* comments */}
-      <View style={styles.commentsProfile}>
-        <Avatar />
-        <Text style={tw`text-white text-2xl text-center`}>Comments</Text>
+      <View style={styles.bottom}>
+        <ScrollView></ScrollView>
       </View>
-      {/* LOG OUT */}
-      {/* <Button
-        title="Log Out"
-        onPress={() => {
-          auth.signOut();
-          navigation.reset({
-            index: 0,
-            routes: [{ name: "Login" }],
-          });
-        }}
-      /> */}
     </SafeAreaView>
   );
 };
@@ -107,30 +64,35 @@ export default ProfileScreen;
 const styles = StyleSheet.create({
   container: {
     display: "flex",
-    flexDirection: "column",
     flex: 1,
   },
-  topProfile: {
-    flex: 0.1,
+  top: {
+    flex: 0.3,
+    display: "flex",
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-around",
+    borderWidth: 1,
+    borderColor: "red",
   },
-  bioProfile: {
-    flex: 0.3,
-    padding: 10,
+  bottom: {
+    flex: 0.7,
+    borderWidth: 1,
+    borderColor: "green",
   },
-  gamesProfile: {
-    flex: 0.3,
-    flexDirection: "column",
-    padding: 5,
-  },
-  commentsProfile: {
-    padding: 5,
-  },
-  gamesContainer: {
+  topInfo: {
     display: "flex",
-    flexDirection: "row",
-    flexWrap: "wrap",
+    justifyContent: "center",
+    width: "50%",
+    height: "50%",
+    alignItems: "center",
+    justifyContent: "flex-start",
+  },
+  bio: {
+    color: "white",
+    display: "flex",
+    justifyContent: "flex-start",
+    alignItems: "flex-start",
+    width: "100%",
   },
 });

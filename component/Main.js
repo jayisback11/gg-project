@@ -8,7 +8,8 @@ import { useDispatch } from "react-redux";
 import { selectUser } from "../slices/userSlice";
 import { useNavigation } from "@react-navigation/native";
 import { db, auth } from "../firebase/firebase";
-import React from 'react'
+import React from "react";
+import SearchScreen from './../screens/SearchScreen';
 const Tab = createBottomTabNavigator();
 
 const Main = () => {
@@ -27,7 +28,24 @@ const Main = () => {
         tabBarActiveBackgroundColor: "white",
         tabBarActiveTintColor: "black",
       }}
+      initialRouteName='Home'
     >
+      <Tab.Screen
+        name="Search"
+        component={SearchScreen}
+        options={{
+          headerShown: false,
+          tabBarButton: (props) => <TouchableOpacity {...props} />,
+          tabBarIcon: ({ color }) => (
+            <Icon
+              name="search-outline"
+              type="ionicon"
+              color={color}
+              size={35}
+            />
+          ),
+        }}
+      />
       <Tab.Screen
         name="Home"
         component={HomeScreen}
