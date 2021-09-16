@@ -14,12 +14,17 @@ import tw from "tailwind-react-native-classnames";
 import HorizontalSlider from "react-horizontal-slider";
 import { useSelector, useDispatch } from "react-redux";
 import { logout, selectUser } from "../slices/userSlice";
-
 const ProfileScreen = () => {
   const navigation = useNavigation();
   const [games, setGames] = useState([]);
   const user = useSelector(selectUser);
   const dispatch = useDispatch();
+
+  const handleSignOut = () => {
+    auth.signOut();
+    dispatch(logout(null));
+    navigation.replace("Login");
+  };
 
   useEffect(() => {
     db.collection("userGames")
@@ -33,36 +38,33 @@ const ProfileScreen = () => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <TouchableOpacity style={[tw`absolute top-7 right-3`, {zIndex: 1}]}>
-        <Icon name="settings-outline" type="ionicon" size={35} color="white" />
+      <TouchableOpacity style={[tw`absolute top-6 right-2`, {zIndex: 1}]} onPress={() => navigation.navigate('Settings')}>
+        <Icon name="settings-outline" type="ionicon" size={35} color="white"/>
       </TouchableOpacity>
       <View style={styles.top}>
-        <View style={styles.topRight}>
-          <Avatar
-            rounded
-            source={{
-              uri: "https://static.wikia.nocookie.net/dota2_gamepedia/images/0/07/Arc_Warden_icon.png/revision/latest/scale-to-width-down/256?cb=20160411214723",
-            }}
-            width={100}
-            height={100}
-          />
-          <View>
-            <Text style={tw`text-white text-xl font-semibold ml-5`}>
-              {user.username}
-            </Text>
+        <Avatar
+          source={{
+            uri:
+              user?.profileURL ||
+              "https://cdn.dribbble.com/users/295073/screenshots/5081089/hacker_logo_v1.0.jpg?compress=1&resize=400x300",
+          }}
+          width={100}
+          height={100}
+          rounded={true}
+        />
+        <View style={styles.topInfo}>
+          <View style={tw``}>
+            <Text style={tw`text-white text-lg`}>{user?.username}</Text>
           </View>
-        </View>
-        <View style={styles.bio}>
-          <Text numberOfLines={2} style={tw`text-white text-sm mt-3 `}>
-            lorem ipsum dolor sit amet, consectetur adiplorem ipsum dolor sit
-            amet, consectetur adiplorem ipsum dolor sit amet, consectetur
-            adiplorem ipsum dolor sit amet, consectetur adip
-          </Text>
+          <View style={styles.bio}>
+            <Text style={tw`text-white text-sm`}>Bio:{user.bio}</Text>
+          </View>
         </View>
       </View>
       <View style={styles.bottom}>
         <ScrollView></ScrollView>
       </View>
+      <Button title="Log out" onPress={() => handleSignOut()} />
     </SafeAreaView>
   );
 };
@@ -71,19 +73,36 @@ export default ProfileScreen;
 
 const styles = StyleSheet.create({
   container: {
+    display: "flex",
     flex: 1,
   },
   top: {
     flex: 0.3,
-    padding: 20,
-    borderBottomWidth: 1,
-    borderColor: "gray",
+    display: "flex",
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-around",
+    borderWidth: 1,
+    borderColor: "red",
   },
   bottom: {
     flex: 0.7,
+    borderWidth: 1,
+    borderColor: "green",
   },
-  topRight: {
-    flexDirection: "row",
+  topInfo: {
+    display: "flex",
     justifyContent: "center",
+    width: "50%",
+    height: "50%",
+    alignItems: "center",
+    justifyContent: "flex-start",
+  },
+  bio: {
+    color: "white",
+    display: "flex",
+    justifyContent: "flex-start",
+    alignItems: "flex-start",
+    width: "100%",
   },
 });

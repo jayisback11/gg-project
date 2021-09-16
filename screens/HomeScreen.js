@@ -18,6 +18,7 @@ import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import * as Location from "expo-location";
 import { db, auth } from "../firebase/firebase";
 import haversine from "haversine-distance";
+import PermissionsButton from '../component/PermissionsButton'
 
 const HomeScreen = () => {
   const navigation = useNavigation();
@@ -103,7 +104,7 @@ const HomeScreen = () => {
                             longitude: userBDoc.data().coords.longitude,
                           };
                           const distance = haversine(userA, userB);
-                          
+
                           setDistanceFromUsers([]);
                           setDistanceFromUsers((oldArray) => [
                             ...oldArray,
@@ -159,9 +160,9 @@ const HomeScreen = () => {
   }, []);
   return (
     <SafeAreaView style={styles.container}>
+    <PermissionsButton/>
       {/* HEADER */}
-      <View style={styles.header}>
-      </View>
+      <View style={styles.header}></View>
       {/* CENTER */}
       <View style={styles.center__container}>
         <Text style={tw`text-white`}>{location?.coords?.longitude}</Text>

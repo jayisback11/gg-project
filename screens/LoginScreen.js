@@ -14,7 +14,7 @@ import { Input, Button } from "react-native-elements";
 import tw from "tailwind-react-native-classnames";
 import { db, auth } from "../firebase/firebase";
 import { useDispatch } from "react-redux";
-import { login } from "../slices/userSlice";
+import { login, logout } from "../slices/userSlice";
 import * as Notifications from "expo-notifications";
 import { reduxSetNotification } from "../slices/notificationSlice";
 import Constants from "expo-constants";
@@ -40,9 +40,9 @@ const LoginScreen = () => {
 
   useEffect(() => {
     registerForPushNotificationsAsync().then((token) => {
-      console.log(token)
+      console.log(token);
       setExpoPushToken(token);
-      dispatch(reduxSetNotification({token}));
+      dispatch(reduxSetNotification({ token }));
     });
 
     // This listener is fired whenever a notification is received while the app is foregrounded
@@ -74,16 +74,9 @@ const LoginScreen = () => {
           .then((docInfo) => {
             dispatch(login(docInfo.data()));
           });
-        db.collection("userGames")
-          .doc(authUser.uid)
-          .get()
-          .then((doc) => {
-            if (doc.exists) {
-              navigation.replace("Main");
-            } else {
-              navigation.replace("AddGames");
-            }
-          });
+        navigation.replace("Main");
+      } else {
+        dispatch(logout(null))
       }
     });
   }, []);

@@ -11,15 +11,14 @@
     "updates": {
       "fallbackToCacheTimeout": 0
     },
-    "assetBundlePatterns": [
-      "**/*"
-    ],
+    "assetBundlePatterns": ["**/*"],
     "ios": {
       "supportsTablet": true,
       "infoPlist": {
         "NSLocationAlwaysAndWhenInUseUsageDescription": "Allow $(PRODUCT_NAME) to access your location",
         "NSLocationAlwaysUsageDescription": "Allow $(PRODUCT_NAME) to access your location",
-        "NSLocationWhenInUseUsageDescription": "Allow $(PRODUCT_NAME) to access your location"
+        "NSLocationWhenInUseUsageDescription": "Allow $(PRODUCT_NAME) to access your location",
+        "UIBackgroundModes": ["location", "fetch"]
       }
     },
     "android": {
@@ -33,10 +32,7 @@
       ]
     },
     "web": {},
-    "plugins": [
-      "expo-location",
-      "expo-notifications"
-    ],
+    "plugins": ["expo-location", "expo-notifications"],
     "description": ""
   }
 }

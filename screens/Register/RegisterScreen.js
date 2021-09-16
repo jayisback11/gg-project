@@ -43,7 +43,7 @@ const Information = () => {
           username: userInfo.username,
           bio: "No bio",
           platforms: "No platforms",
-          profileURL: '',
+          profileURL: "",
         });
         navigation.navigate("AddGames");
       })
@@ -90,12 +90,14 @@ const Information = () => {
       >
         <Input
           placeholder="First Name"
+          color="white"
           onChangeText={(first_name) =>
             setUserInfo({ ...userInfo, first_name })
           }
         />
         <Input
           placeholder="Last Name"
+          color="white"
           onChangeText={(last_name) => setUserInfo({ ...userInfo, last_name })}
         />
         <Button
@@ -120,10 +122,13 @@ const Information = () => {
       >
         <Input
           placeholder="Username"
+          color="white"
           onChangeText={(username) => setUserInfo({ ...userInfo, username })}
         />
         <Input
+          color="white"
           placeholder="Password"
+          secureTextEntry={true}
           onChangeText={(password) => setUserInfo({ ...userInfo, password })}
         />
         <Button
