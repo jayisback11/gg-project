@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import {
+  ImageBackground,
   StyleSheet,
   Text,
   View,
@@ -18,7 +19,7 @@ import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import * as Location from "expo-location";
 import { db, auth } from "../firebase/firebase";
 import haversine from "haversine-distance";
-import PermissionsButton from '../component/PermissionsButton'
+import PermissionsButton from "../component/PermissionsButton";
 
 const HomeScreen = () => {
   const navigation = useNavigation();
@@ -160,7 +161,16 @@ const HomeScreen = () => {
   }, []);
   return (
     <SafeAreaView style={styles.container}>
-    <PermissionsButton/>
+      <ImageBackground
+        source={{
+          uri: "https://images.unsplash.com/photo-1601042879364-f3947d3f9c16?ixid=MnwxMjA3fDB8MHxzZWFyY2h8MXx8Y3liZXJwdW5rfGVufDB8fDB8fA%3D%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60",
+        }}
+        resizeMode="cover"
+        style={styles.image}
+      >
+        <Text style={styles.text}>Inside</Text>
+      </ImageBackground>
+      <PermissionsButton />
       {/* HEADER */}
       <View style={styles.header}></View>
       {/* CENTER */}
@@ -201,4 +211,9 @@ async function sendPushNotification(expoPushToken) {
 
 export default HomeScreen;
 
-const styles = StyleSheet.create({});
+const styles = StyleSheet.create({
+  image: {
+    flex: 1,
+    justifyContent: "center",
+  },
+});

@@ -8,9 +8,10 @@ import {
   Keyboard,
   KeyboardAvoidingView,
   Platform,
+  ImageBackground,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
-import { Input, Button } from "react-native-elements";
+import { Input, Button, Icon } from "react-native-elements";
 import tw from "tailwind-react-native-classnames";
 import { db, auth } from "../firebase/firebase";
 import { useDispatch } from "react-redux";
@@ -18,6 +19,8 @@ import { login, logout } from "../slices/userSlice";
 import * as Notifications from "expo-notifications";
 import { reduxSetNotification } from "../slices/notificationSlice";
 import Constants from "expo-constants";
+import { useFonts } from "expo-font";
+import { LinearGradient } from "expo-linear-gradient";
 
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
@@ -76,10 +79,18 @@ const LoginScreen = () => {
           });
         navigation.replace("Main");
       } else {
-        dispatch(logout(null))
+        dispatch(logout(null));
       }
     });
   }, []);
+
+  const [loaded] = useFonts({
+    PressStart2P: require("../assets/fonts/PressStart2P-Regular.ttf"),
+  });
+
+  if (!loaded) {
+    return null;
+  }
 
   const handleLogin = () => {
     auth
@@ -89,40 +100,68 @@ const LoginScreen = () => {
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
-      <View style={tw`bg-black flex-grow justify-center`}>
-        <KeyboardAvoidingView
-          behavior={Platform.OS === "ios" ? "padding" : "height"}
+      <View style={[tw`bg-black flex-grow justify-center`]}>
+        <ImageBackground
+          source={require("../assets/images/loginBackgroundImage.jpg")}
+          resizeMode="cover"
+          style={[styles.image, { alignItems: "center" }]}
         >
-          <View style={tw`items-center flex justify-center p-5`}>
-            <Text style={tw`text-white text-4xl font-semibold mb-5`}>
-              Login
-            </Text>
-            <Input
-              color="white"
-              placeholder="Username"
-              type="text"
-              onChangeText={(user) => setUsername(user)}
-            />
-            <Input
-              color="white"
-              placeholder="Password"
-              secureTextEntry={true}
-              onChangeText={(password) => setPassword(password)}
-            />
-            <Button
-              style={{ width: 200, marginBottom: 10, marginTop: 5 }}
-              title="Login"
-              onPress={handleLogin}
-            />
-            <Button
-              style={{ width: 200 }}
-              type="outline"
-              title="Register"
-              onPress={() => navigation.navigate("Register")}
-            />
-          </View>
-          <View style={tw`mb-10`} />
-        </KeyboardAvoidingView>
+          <KeyboardAvoidingView
+            style={tw`w-full items-center`}
+            behavior={Platform.OS === "ios" ? "padding" : "height"}
+          >
+            <View
+              style={[
+                { backgroundColor: "rgba(15, 15, 15, 0.8)", width: "75%" },
+              ]}
+            >
+              <View style={tw`items-center flex justify-center p-5`}>
+                <Text
+                  style={[
+                    tw`text-white text-4xl font-semibold mb-5`,
+                    { fontFamily: "PressStart2P", fontSize: 30 },
+                  ]}
+                >
+                  welcome
+                </Text>
+                <Input
+                  color="white"
+                  placeholder="Email"
+                  type="text"
+                  onChangeText={(user) => setUsername(user)}
+                  
+                />
+                <Input
+                  color="white"
+                  placeholder="Password"
+                  secureTextEntry={true}
+                  onChangeText={(password) => setPassword(password)}
+                />
+                <Button
+                  style={{ width: 200, marginBottom: 10, marginTop: 5 }}
+                  ViewComponent={LinearGradient} // Don't forget this!
+                  title="Login"
+                  onPress={handleLogin}
+                  linearGradientProps={{
+                    colors: ["purple", "blue"],
+                    start: { x: 0, y: 0.5 },
+                    end: { x: 1, y: 0.5 },
+                  }}
+                  icon={
+                    <Icon name="arrow-forward-circle-outline" type="ionicon" size={25} color="white"/>
+                  }
+                />
+                <Button
+                  style={{ width: 200 }}
+                  type="outline"
+                  title="Register"
+                  onPress={() => navigation.navigate("Register")}
+                />
+              </View>
+            </View>
+            <View style={tw`mb-10`} />
+          </KeyboardAvoidingView>
+        </ImageBackground>
       </View>
     </TouchableWithoutFeedback>
   );
@@ -161,3 +200,12 @@ async function registerForPushNotificationsAsync() {
 }
 
 export default LoginScreen;
+
+const styles = StyleSheet.create({
+  image: {
+    flex: 1,
+    justifyContent: "center",
+    top: 0,
+    right: 0,
+  },
+});
