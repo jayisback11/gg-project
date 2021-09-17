@@ -139,7 +139,7 @@ const LoginScreen = () => {
                 />
                 <Button
                   style={{ width: 200, marginBottom: 10, marginTop: 5 }}
-                  ViewComponent={LinearGradient} // Don't forget this!
+                  ViewComponent={LinearGradient} 
                   title="Login"
                   onPress={handleLogin}
                   linearGradientProps={{
