@@ -112,7 +112,7 @@ const LoginScreen = () => {
           >
             <View
               style={[
-                { backgroundColor: "rgba(15, 15, 15, 0.8)", width: "75%" },
+                { backgroundColor: "rgba(15, 15, 15, 0.8)", width: "75%", borderRadius: 20 },
               ]}
             >
               <View style={tw`items-center flex justify-center p-5`}>
