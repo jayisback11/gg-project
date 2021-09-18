@@ -95,6 +95,7 @@ const Register = () => {
             <Input
               type="password"
               placeholder="Password"
+              secureTextEntry={true}
               onChangeText={(password) => setPassword(password)}
               color="white"
               leftIcon={
@@ -111,6 +112,7 @@ const Register = () => {
               type="password"
               placeholder="Confirm Password"
               color="white"
+              secureTextEntry={true}
               onChangeText={(confirmPassword) =>
                 setConfirmPassword(confirmPassword)
               }
@@ -124,11 +126,10 @@ const Register = () => {
                 />
               }
             />
-            {console.log(email)}
             <Button
               type="outline"
               title="Register"
-              disabled={(email && password && confirmPassword) ? false : true}
+              disabled={email && password && confirmPassword ? false : true}
               style={{ width: 200 }}
               onPress={handleRegister}
             />

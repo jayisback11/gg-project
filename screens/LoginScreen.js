@@ -22,13 +22,13 @@ import Constants from "expo-constants";
 import { useFonts } from "expo-font";
 import { LinearGradient } from "expo-linear-gradient";
 
-Notifications.setNotificationHandler({
-  handleNotification: async () => ({
-    shouldShowAlert: true,
-    shouldPlaySound: false,
-    shouldSetBadge: false,
-  }),
-});
+// Notifications.setNotificationHandler({
+//   handleNotification: async () => ({
+//     shouldShowAlert: true,
+//     shouldPlaySound: false,
+//     shouldSetBadge: false,
+//   }),
+// });
 
 const LoginScreen = () => {
   const dispatch = useDispatch();
@@ -41,36 +41,36 @@ const LoginScreen = () => {
   const notificationListener = useRef();
   const responseListener = useRef();
 
-  useEffect(() => {
-    registerForPushNotificationsAsync().then((token) => {
-      console.log(token);
-      setExpoPushToken(token);
-      dispatch(reduxSetNotification({ token }));
-    });
+  // useEffect(() => {
+  //   registerForPushNotificationsAsync().then((token) => {
+  //     console.log(token);
+  //     setExpoPushToken(token);
+  //     dispatch(reduxSetNotification({ token }));
+  //   });
 
-    // This listener is fired whenever a notification is received while the app is foregrounded
-    notificationListener.current =
-      Notifications.addNotificationReceivedListener((notification) => {
-        setNotification(notification);
-      });
+  //   // This listener is fired whenever a notification is received while the app is foregrounded
+  //   notificationListener.current =
+  //     Notifications.addNotificationReceivedListener((notification) => {
+  //       setNotification(notification);
+  //     });
 
-    // This listener is fired whenever a user taps on or interacts with a notification (works when app is foregrounded, backgrounded, or killed)
-    responseListener.current =
-      Notifications.addNotificationResponseReceivedListener((response) => {
-        console.log(response);
-      });
+  //   // This listener is fired whenever a user taps on or interacts with a notification (works when app is foregrounded, backgrounded, or killed)
+  //   responseListener.current =
+  //     Notifications.addNotificationResponseReceivedListener((response) => {
+  //       console.log(response);
+  //     });
 
-    return () => {
-      Notifications.removeNotificationSubscription(
-        notificationListener.current
-      );
-      Notifications.removeNotificationSubscription(responseListener.current);
-    };
-  }, []);
+  //   return () => {
+  //     Notifications.removeNotificationSubscription(
+  //       notificationListener.current
+  //     );
+  //     Notifications.removeNotificationSubscription(responseListener.current);
+  //   };
+  // }, []);
 
   useEffect(() => {
     auth.onAuthStateChanged((authUser) => {
-      if (authUser) {
+      if (authUser || null) {
         db.collection("userInfo")
           .doc(authUser.uid)
           .get()
@@ -112,7 +112,11 @@ const LoginScreen = () => {
           >
             <View
               style={[
-                { backgroundColor: "rgba(15, 15, 15, 0.8)", width: "75%", borderRadius: 20 },
+                {
+                  backgroundColor: "rgba(15, 15, 15, 0.8)",
+                  width: "75%",
+                  borderRadius: 20,
+                },
               ]}
             >
               <View style={tw`items-center flex justify-center p-5`}>
@@ -129,7 +133,6 @@ const LoginScreen = () => {
                   placeholder="Email"
                   type="text"
                   onChangeText={(user) => setUsername(user)}
-                  
                 />
                 <Input
                   color="white"
@@ -139,7 +142,7 @@ const LoginScreen = () => {
                 />
                 <Button
                   style={{ width: 200, marginBottom: 10, marginTop: 5 }}
-                  ViewComponent={LinearGradient} 
+                  ViewComponent={LinearGradient}
                   title="Login"
                   onPress={handleLogin}
                   linearGradientProps={{
@@ -148,7 +151,12 @@ const LoginScreen = () => {
                     end: { x: 1, y: 0.5 },
                   }}
                   icon={
-                    <Icon name="arrow-forward-circle-outline" type="ionicon" size={25} color="white"/>
+                    <Icon
+                      name="arrow-forward-circle-outline"
+                      type="ionicon"
+                      size={25}
+                      color="white"
+                    />
                   }
                 />
                 <Button

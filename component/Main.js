@@ -9,26 +9,24 @@ import { selectUser } from "../slices/userSlice";
 import { useNavigation } from "@react-navigation/native";
 import { db, auth } from "../firebase/firebase";
 import React from "react";
-import SearchScreen from './../screens/SearchScreen';
+import SearchScreen from "./../screens/SearchScreen";
 const Tab = createBottomTabNavigator();
 
 const Main = () => {
   return (
     <Tab.Navigator
       initialRouteName={HomeScreen}
-      sceneContainerStyle={{ backgroundColor: "black" }}
       screenOptions={{
         tabBarInactiveTintColor: "white",
         tabBarShowLabel: false,
         tabBarStyle: {
           backgroundColor: "black",
-          borderTopWidth: 0.5,
-          borderTopColor: "white",
+          borderTopWidth: 0,
         },
         tabBarActiveBackgroundColor: "white",
         tabBarActiveTintColor: "black",
       }}
-      initialRouteName='Home'
+      initialRouteName="Home"
     >
       <Tab.Screen
         name="Search"
@@ -54,22 +52,6 @@ const Main = () => {
           tabBarButton: (props) => <TouchableOpacity {...props} />,
           tabBarIcon: ({ color }) => (
             <Icon name="home-outline" type="ionicon" color={color} size={35} />
-          ),
-        }}
-      />
-      <Tab.Screen
-        name="Profile"
-        component={ProfileScreen}
-        options={{
-          headerShown: false,
-          tabBarButton: (props) => <TouchableOpacity {...props} />,
-          tabBarIcon: ({ color }) => (
-            <Icon
-              name="person-circle-outline"
-              type="ionicon"
-              color={color}
-              size={35}
-            />
           ),
         }}
       />

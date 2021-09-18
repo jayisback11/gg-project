@@ -3,13 +3,13 @@ import "firebase/firestore";
 import "firebase/auth";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyA4gRlHNnUkI89EVAG2h-1jueLKpTazOOY",
-  authDomain: "gg-project-eb583.firebaseapp.com",
-  projectId: "gg-project-eb583",
-  storageBucket: "gg-project-eb583.appspot.com",
-  messagingSenderId: "183314668887",
-  appId: "1:183314668887:web:4c64fa597c511b4c3f7212",
-  measurementId: "G-P2R06N2LWM",
+  apiKey: "AIzaSyDRw_uJlcN-Bb9IVSWXvt88CPRYmnAn1-g",
+  authDomain: "gg-project-2.firebaseapp.com",
+  projectId: "gg-project-2",
+  storageBucket: "gg-project-2.appspot.com",
+  messagingSenderId: "291229903461",
+  appId: "1:291229903461:web:4a8fdb8fdf19631946348c",
+  measurementId: "G-YNHS7REBV1",
 };
 
 const app = !firebase.apps.length

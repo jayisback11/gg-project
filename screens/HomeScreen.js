@@ -7,6 +7,8 @@ import {
   SafeAreaView,
   TouchableOpacity,
   Platform,
+  Image,
+  ScrollView,
 } from "react-native";
 import tw from "tailwind-react-native-classnames";
 import { useSelector, useDispatch } from "react-redux";
@@ -14,12 +16,13 @@ import { selectUser, login } from "../slices/userSlice";
 import { selectNotification } from "../slices/notificationSlice";
 import { useNavigation } from "@react-navigation/native";
 import LoginScreen from "../screens/LoginScreen";
-import { Icon, Button } from "react-native-elements";
+import { Icon, Button, Avatar } from "react-native-elements";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import * as Location from "expo-location";
 import { db, auth } from "../firebase/firebase";
 import haversine from "haversine-distance";
 import PermissionsButton from "../component/PermissionsButton";
+import { LinearGradient } from "expo-linear-gradient";
 
 const HomeScreen = () => {
   const navigation = useNavigation();
@@ -30,6 +33,8 @@ const HomeScreen = () => {
   const [prevLocation, setPrevLocation] = useState(null);
   const [distanceFromUsers, setDistanceFromUsers] = useState([]);
   const expoPushToken = useSelector(selectNotification);
+  const [games, setGames] = useState(["dota", "csgo"]);
+  const [socialMediaLinks, setSocialMediaLinks] = useState([]);
 
   useEffect(() => {
     const getPermission = async () => {
@@ -55,7 +60,7 @@ const HomeScreen = () => {
           });
       }
     };
-    getPermission();
+    // getPermission();
 
     db.collection("userInfo")
       .doc(auth.currentUser.uid)
@@ -66,126 +71,194 @@ const HomeScreen = () => {
       .catch((error) => console.log(error));
   }, [location?.coords?.altitude]);
 
-  useEffect(() => {
-    const interval = setInterval(() => {
-      db.collection("userLocation")
-        .doc(auth.currentUser.uid)
-        .get()
-        .then((userADoc) => {
-          if (userADoc.exists) {
-            let userA = {
-              latitude: userADoc.data().coords.latitude,
-              longitude: userADoc.data().coords.longitude,
-            };
-            db.collection("userLocation")
-              .get()
-              .then((snapshot) => {
-                snapshot.docs.map((userBDoc) => {
-                  /////IF BOTH USERS ALREADY NOTIFICATED IN THE PAST, THEN GO TO NEXT DOC//////
-                  if (userBDoc.id !== auth.currentUser.uid) {
-                    let isExist = false;
-                    db.collection("notificationIds")
-                      .get()
-                      .then((snapshot) => {
-                        snapshot.docs.map((notificationId) => {
-                          if (
-                            notificationId
-                              .data()
-                              .participants.includes(auth.currentUser.uid) &&
-                            notificationId
-                              .data()
-                              .participants.includes(userBDoc.id)
-                          ) {
-                            isExist = true;
-                          }
-                        });
-                        if (!isExist) {
-                          let userB = {
-                            latitude: userBDoc.data().coords.latitude,
-                            longitude: userBDoc.data().coords.longitude,
-                          };
-                          const distance = haversine(userA, userB);
+  // useEffect(() => {
+  //   const interval = setInterval(() => {
+  //     db.collection("userLocation")
+  //       .doc(auth.currentUser.uid)
+  //       .get()
+  //       .then((userADoc) => {
+  //         if (userADoc.exists) {
+  //           let userA = {
+  //             latitude: userADoc.data().coords.latitude,
+  //             longitude: userADoc.data().coords.longitude,
+  //           };
+  // db.collection("userLocation")
+  // .get()
+  //             .then((snapshot) => {
+  //               snapshot.docs.map((userBDoc) => {
+  //                 /////IF BOTH USERS ALREADY NOTIFICATED IN THE PAST, THEN GO TO NEXT DOC//////
+  //                 if (userBDoc.id !== auth.currentUser.uid) {
+  //                   let isExist = false;
+  //                   db.collection("notificationIds")
+  //                     .get()
+  //                     .then((snapshot) => {
+  //                       snapshot.docs.map((notificationId) => {
+  //                         if (
+  //                           notificationId
+  //                             .data()
+  //                             .participants.includes(auth.currentUser.uid) &&
+  //                           notificationId
+  //                             .data()
+  //                             .participants.includes(userBDoc.id)
+  //                         ) {
+  //                           isExist = true;
+  //                         }
+  //                       });
+  //                       if (!isExist) {
+  //                         let userB = {
+  //                           latitude: userBDoc.data().coords.latitude,
+  //                           longitude: userBDoc.data().coords.longitude,
+  //                         };
+  //                         const distance = haversine(userA, userB);
 
-                          setDistanceFromUsers([]);
-                          setDistanceFromUsers((oldArray) => [
-                            ...oldArray,
-                            {
-                              distanceBetweenUsers: distance,
-                              otherUser: userBDoc.data().displayName,
-                              currentUser: userADoc.data().displayName,
-                            },
-                          ]);
-                          if (distance <= 150) {
-                            db.collection("userGames")
-                              .doc(auth.currentUser.uid)
-                              .get()
-                              .then((userAGames) => {
-                                db.collection("userGames")
-                                  .doc(userBDoc.id)
-                                  .get()
-                                  .then((userBGames) => {
-                                    const similarGames = userAGames
-                                      .data()
-                                      .games.filter((game) =>
-                                        userBGames.data().games.includes(game)
-                                      );
-                                    if (similarGames.length > 0) {
-                                      db.collection("notificationIds").add({
-                                        participants: [
-                                          auth.currentUser.uid,
-                                          userBDoc.id,
-                                        ],
-                                      });
-                                      sendPushNotification(
-                                        expoPushToken?.token
-                                      );
-                                    }
-                                  });
-                              });
-                          }
-                        }
-                      });
-                  }
-                });
-              });
-          } else {
-            // doc.data() will be undefined in this case
-            console.log("No such document!");
-          }
-        })
-        .catch((error) => {
-          console.log("Error getting document:", error);
-        });
-    }, 5000);
-    return () => clearInterval(interval);
-  }, []);
+  //                         setDistanceFromUsers([]);
+  //                         setDistanceFromUsers((oldArray) => [
+  //                           ...oldArray,
+  //                           {
+  //                             distanceBetweenUsers: distance,
+  //                             otherUser: userBDoc.data().displayName,
+  //                             currentUser: userADoc.data().displayName,
+  //                           },
+  //                         ]);
+  //                         if (distance <= 150) {
+  //                           db.collection("userGames")
+  // .doc(auth.currentUser.uid)
+  //                             .get()
+  //                             .then((userAGames) => {
+  //                               db.collection("userGames")
+  //                                 .doc(userBDoc.id)
+  //                                 .get()
+  //                                 .then((userBGames) => {
+  //                                   const similarGames = userAGames
+  //                                     .data()
+  //                                     .games.filter((game) =>
+  //                                       userBGames.data().games.includes(game)
+  //                                     );
+  //                                   if (similarGames.length > 0) {
+  //                                     db.collection("notificationIds").add({
+  //                                       participants: [
+  //                                         auth.currentUser.uid,
+  //                                         userBDoc.id,
+  //                                       ],
+  //                                     });
+  //                                     sendPushNotification(
+  //                                       expoPushToken?.token
+  //                                     );
+  //                                   }
+  //                                 });
+  //                             });
+  //                         }
+  //                       }
+  //                     });
+  //                 }
+  //               });
+  //             });
+  //         } else {
+  //           // doc.data() will be undefined in this case
+  //           console.log("No such document!");
+  //         }
+  //       })
+  //       .catch((error) => {
+  //         console.log("Error getting document:", error);
+  //       });
+  //   }, 5000);
+  //   return () => clearInterval(interval);
+  // }, []);
+
+  const handleSignOut = () => {
+    auth.signOut();
+    navigation.replace("Login");
+  };
+
   return (
-    <SafeAreaView style={styles.container}>
-      <ImageBackground
-        source={{
-          uri: "https://images.unsplash.com/photo-1601042879364-f3947d3f9c16?ixid=MnwxMjA3fDB8MHxzZWFyY2h8MXx8Y3liZXJwdW5rfGVufDB8fDB8fA%3D%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60",
-        }}
-        resizeMode="cover"
-        style={styles.image}
-      >
-        <Text style={styles.text}>Inside</Text>
-      </ImageBackground>
-      <PermissionsButton />
-      {/* HEADER */}
-      <View style={styles.header}></View>
-      {/* CENTER */}
-      <View style={styles.center__container}>
-        <Text style={tw`text-white`}>{location?.coords?.longitude}</Text>
-        <Text style={tw`text-white`}>{location?.coords?.latitude}</Text>
-        {distanceFromUsers.map(
-          ({ otherUser, distanceBetweenUsers, currentUser }, index) => (
-            <Text style={tw`text-white`} key={index}>
-              User: {otherUser} -> {distanceBetweenUsers} meters {currentUser}
-            </Text>
-          )
-        )}
+    <View style={{ flex: 1 }}>
+      <View style={styles.topContainer}>
+        <View style={tw`flex-row absolute top-2 right-3 items-center`}>
+          <Text style={tw`text-white font-semibold text-lg mr-1`}>5</Text>
+          <Icon
+            style={{ top: -1 }}
+            name="star"
+            type="ionicon"
+            size={20}
+            color="yellow"
+          />
+        </View>
+        <TouchableOpacity onPress={handleSignOut}>
+          <Image
+            source={require("../assets/images/profilePicture.jpg")}
+            style={styles.profilePicture}
+          />
+        </TouchableOpacity>
+        <Text style={tw`text-white text-2xl font-bold mt-2`}>jayisback11</Text>
       </View>
-    </SafeAreaView>
+      <View style={styles.topBackgroundColor} />
+      <View style={styles.bottomBackgroundColor}>
+        <View style={styles.bottomContainer}>
+          <ScrollView style={{ padding: 10 }}>
+            <TouchableOpacity
+              onPress={() =>
+                navigation.navigate("AddGames", {
+                  currentGames: user?.games,
+                })
+              }
+              style={[tw`absolute top-0 right-0`, { zIndex: 1 }]}
+            >
+              <Icon
+                name="add-circle-outline"
+                type="ionicon"
+                size={35}
+                color="white"
+              />
+            </TouchableOpacity>
+            <View style={tw`items-center`}>
+              <View style={tw`mb-2`}>
+                {user.games ? (
+                  <View style={{ height: 140 }}>
+                    <Text
+                      style={tw`text-white font-semibold text-xl text-center mb-2`}
+                    >
+                      Games
+                    </Text>
+                    <ScrollView horizontal={true}>
+                      {user?.games.map((game) => (
+                        <Image
+                          key={game.name}
+                          source={{
+                            uri: game.backgroundImage,
+                          }}
+                          resizeMode="cover"
+                          style={{
+                            width: 50,
+                            height: 100,
+                            marginLeft: 5,
+                            marginRight: 5,
+                            borderRadius: 10,
+                          }}
+                        />
+                      ))}
+                    </ScrollView>
+                  </View>
+                ) : (
+                  <Text style={tw`text-white font-semibold text-lg`}>
+                    No Games
+                  </Text>
+                )}
+              </View>
+            </View>
+          </ScrollView>
+          <LinearGradient
+            style={{
+              position: "absolute",
+              bottom: 0,
+              width: "100%",
+              height: 25,
+            }}
+            colors={["rgba(0, 0, 0, 0)", "rgba(66, 15, 141, 0.8)"]}
+            pointerEvents={"none"}
+          />
+        </View>
+      </View>
+    </View>
   );
 };
 
@@ -212,8 +285,50 @@ async function sendPushNotification(expoPushToken) {
 export default HomeScreen;
 
 const styles = StyleSheet.create({
-  image: {
-    flex: 1,
+  topContainer: {
+    position: "absolute",
+    top: "10%",
+    height: "30%",
+    left: "10%",
+    width: "80%",
     justifyContent: "center",
+    alignItems: "center",
+    zIndex: 2,
+    backgroundColor: "rgba(15, 15, 15, 0.8)",
+    borderRadius: 20,
+  },
+  topBackgroundColor: {
+    flex: 0.3,
+    backgroundColor: "#DC3522",
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 7,
+    },
+    shadowOpacity: 0.43,
+    shadowRadius: 9.51,
+    zIndex: 1,
+    elevation: 15,
+  },
+  bottomContainer: {
+    width: "90%",
+    height: "75%",
+    top: "6%",
+    backgroundColor: "rgba(15, 15, 15, 0.8)",
+    borderRadius: 20,
+    overflow: "hidden",
+  },
+  bottomBackgroundColor: {
+    flex: 0.7,
+    backgroundColor: "#420F8D",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  profilePicture: {
+    width: 125,
+    height: 125,
+    borderRadius: 62.5,
+    borderWidth: 2,
+    borderColor: "white",
   },
 });

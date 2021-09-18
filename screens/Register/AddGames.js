@@ -15,12 +15,13 @@ import { debounce } from "lodash";
 import { db, auth } from "../../firebase/firebase";
 import { useNavigation } from "@react-navigation/native";
 
-const AddGames = () => {
+const AddGames = ({ route }) => {
   const navigation = useNavigation();
   const [availableGames, setAvailableGames] = useState([]);
   const [search, setSearch] = useState("");
   const [text, setText] = useState("");
   const [gamesAdded, setGamesAdded] = useState([]);
+
   const deb = useCallback(
     debounce((text) => {
       setSearch(text);
@@ -28,13 +29,17 @@ const AddGames = () => {
     }, 1000),
     []
   );
+  console.log("text", route.params.currentGames);
   const handleSearch = (text) => {
     setText(text);
     deb(text);
   };
 
   const handleGameAdd = (game) => {
-    setGamesAdded((oldArray) => [...oldArray, game.name]);
+    setGamesAdded((oldArray) => [
+      ...oldArray,
+      { name: game.name, backgroundImage: game.background_image },
+    ]);
   };
 
   const handleDelete = (item) => {
@@ -46,11 +51,10 @@ const AddGames = () => {
   };
 
   const handleSubmit = () => {
-    db.collection("userGames")
+    db.collection("userInfo")
       .doc(auth.currentUser.uid)
-      .set({ games: gamesAdded })
+      .set({ games: gamesAdded }, { merge: true })
       .then(() => {
-        console.log("document in userGames is successfully added");
         navigation.replace("Main");
       })
       .catch((error) => console.log(error));
@@ -59,7 +63,7 @@ const AddGames = () => {
   useEffect(() => {
     async function fetchGames() {
       const result = await fetch(
-        `https://api.rawg.io/api/games?key=${API_KEY}&search=${search}&ordering=-rating&search_precise=true&exclude_additions=true`
+        `https://api.rawg.io/api/games?key=d321e70532c843fca84e97ff4f126e57&search=${search}&ordering=-rating&search_precise=true&exclude_additions=true`
       )
         .then((response) => response.json())
         .then((data) => setAvailableGames(JSON.parse(JSON.stringify(data))));
@@ -68,7 +72,7 @@ const AddGames = () => {
       fetchGames();
     }
   }, [search]);
-  console.log("games", gamesAdded);
+  console.log(availableGames);
   return (
     <SafeAreaView style={styles.homeScreen}>
       <View style={styles.homeScreenContainer}>
