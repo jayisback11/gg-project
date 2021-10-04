@@ -1,4 +1,4 @@
-****THIS APP IS NOT YET PUBLISH****
+****THIS APP IS NOT YET PUBLISH****  
 **NAME**  
 The mobile application name is 'GG', which stands for Good Game.
 **PURPOSE**  
